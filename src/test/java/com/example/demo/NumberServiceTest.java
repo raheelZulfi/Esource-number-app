@@ -19,23 +19,58 @@ public class NumberServiceTest {
 
 	@Test
 	void testGetAvailableNumbers_example() {
-		// Example from the requirements
 		int[] arr1 = {3, 4, 5, 6, 7};
 		int[] arr2 = {1, 4, 5, 6, 10};
 		int[] arr3 = {0, 1, 2, 3, 5};
 		List<Integer> available = service.getAvailableNumbers(arr1, arr2, arr3, 10);
-		assertEquals(List.of(8, 9), available, "Available numbers should be [8, 9]");
+		// Expected [8, 9]
+		assertEquals(List.of(8, 9), available);
 	}
 
 	@Test
-	void testGetLargestPrime() {
+	void testGetAvailableNumbers_edgeCase() {
+		// Edge case: maxInclusive = 0, meaning only one possible number: 0
+		int[] arr1 = {};
+		int[] arr2 = {};
+		int[] arr3 = {};
+		List<Integer> available = service.getAvailableNumbers(arr1, arr2, arr3, 0);
+		// Since no arrays have numbers, 0 is available
+		assertEquals(List.of(0), available);
+	}
+
+	@Test
+	void testGetLargestPrime_multiplePrimes() {
 		List<Integer> numbers = List.of(8, 9, 11, 13, 4, 2);
-		assertEquals(13, service.getLargestPrime(numbers), "Largest prime should be 13");
+		// Multiple primes (2, 11, 13), largest is 13
+		assertEquals(13, service.getLargestPrime(numbers));
+	}
+
+	@Test
+	void testGetLargestPrime_singlePrime() {
+		List<Integer> numbers = List.of(4, 6, 10, 3);
+		// Only one prime (3)
+		assertEquals(3, service.getLargestPrime(numbers));
+	}
+
+	@Test
+	void testGetLargestPrime_allPrimes() {
+		List<Integer> numbers = List.of(2, 3, 5, 7);
+		// All are primes, largest is 7
+		assertEquals(7, service.getLargestPrime(numbers));
 	}
 
 	@Test
 	void testGetLargestPrime_noPrimes() {
 		List<Integer> numbers = List.of(0, 1, 4, 8, 9);
-		assertNull(service.getLargestPrime(numbers), "No primes should return null");
+		// No prime numbers
+		assertNull(service.getLargestPrime(numbers));
+	}
+
+	@Test
+	void testGetLargestPrime_withNegatives() {
+		// Includes negative numbers and a non-prime positive number
+		List<Integer> numbers = List.of(-3, -1, 15, 16);
+		// None are prime
+		assertNull(service.getLargestPrime(numbers));
 	}
 }
