@@ -1,58 +1,55 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * Service class to handle number generation and analysis.
- * Responsibilities:
- * - Generate random arrays of integers.
- * - Compute available numbers not present in given arrays.
- * - Find the largest prime in a list of integers.
  */
 @Service
 public class NumberService {
 
+    // Explicitly private and final for clarity.
     private final Random random = new Random();
 
     /**
      * Generates an array of the given size with random integers in [0, maxInclusive].
-     * @param size the size of the array
-     * @param maxInclusive the maximum random number (inclusive)
-     * @return an array of random integers
      */
     public int[] generateRandomArray(int size, int maxInclusive) {
+        // If deterministic tests or security needs arise, consider injecting a different Random or SecureRandom.
         return random.ints(size, 0, maxInclusive + 1).toArray();
     }
 
     /**
      * Given three arrays and a max inclusive value, returns all integers in [0, maxInclusive]
-     * that do not appear in ANY of the arrays.
-     * @param arr1 first array
-     * @param arr2 second array
-     * @param arr3 third array
-     * @param maxInclusive upper bound of numbers range
-     * @return a list of available (unused) numbers
+     * that are NOT present in any of the arrays.
+     *
+     * For very large maxInclusive, consider a more memory-efficient approach than building a full set.
      */
     public List<Integer> getAvailableNumbers(int[] arr1, int[] arr2, int[] arr3, int maxInclusive) {
         Set<Integer> allNumbers = IntStream.rangeClosed(0, maxInclusive).boxed().collect(Collectors.toSet());
 
+        // Inline the previously separate addArrayToSet logic
         Set<Integer> usedNumbers = new HashSet<>();
-        addArrayToSet(usedNumbers, arr1);
-        addArrayToSet(usedNumbers, arr2);
-        addArrayToSet(usedNumbers, arr3);
+        for (int num : arr1) {
+            usedNumbers.add(num);
+        }
+        for (int num : arr2) {
+            usedNumbers.add(num);
+        }
+        for (int num : arr3) {
+            usedNumbers.add(num);
+        }
 
         allNumbers.removeAll(usedNumbers);
         return new ArrayList<>(allNumbers);
     }
 
     /**
-     * Finds the largest prime number in a given list.
-     * If none are prime, returns null.
-     * @param numbers list of integers
-     * @return the largest prime or null if none
+     * Finds the largest prime number in the given list or returns null if none exist.
      */
     public Integer getLargestPrime(List<Integer> numbers) {
         return numbers.stream()
@@ -61,16 +58,9 @@ public class NumberService {
                 .orElse(null);
     }
 
-    private void addArrayToSet(Set<Integer> set, int[] array) {
-        for (int num : array) {
-            set.add(num);
-        }
-    }
-
     /**
-     * Determines if a given number is prime.
-     * @param num the number to check
-     * @return true if prime, false otherwise
+     * Checks if a number is prime.
+     * For the given problem constraints (0–50), this approach is sufficient.
      */
     private static boolean isPrime(int num) {
         if (num < 2) return false;
